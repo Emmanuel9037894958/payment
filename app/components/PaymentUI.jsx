@@ -3,6 +3,7 @@
 import Image from "next/image";
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
+import { X } from "lucide-react";
 
 export default function PaymentUI() {
   const [open, setOpen] = useState(false);
@@ -35,6 +36,7 @@ export default function PaymentUI() {
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden py-30 mb-0">
+
       {/* Background Video */}
       <video
         src="/video1.mp4"
@@ -51,26 +53,23 @@ export default function PaymentUI() {
 
       {/* MAIN CARD */}
       <div className="relative z-20 w-[90%] max-w-4xl rounded-3xl bg-white/10 border border-white/20 shadow-[0_0_50px_rgba(0,0,20,0.5)] p-10">
+
         <h1 className="text-3xl md:text-4xl font-bold text-white mb-3">
           Complete Your Secure Payment
         </h1>
+
         <p className="text-white/70 mb-10">
           Choose how you want to get started or make a payment.
         </p>
 
         <div className="flex flex-col md:flex-row justify-between items-center gap-10">
+
           {/* LEFT SIDE */}
           <div className="relative w-full md:w-2/3 rounded-2xl p-6 overflow-hidden shadow-xl">
-            {/* <Image
-              src="/images5.jpg"
-              alt="payment background"
-              fill
-              className="object-cover absolute inset-0 -z-10 scale-110 transition-all duration-[1200m]"
-            /> */}
-
             <p className="text-white text-xs uppercase tracking-wider">
               Payment Options
             </p>
+
             <p className="text-white font-semibold text-lg mb-4">
               Available Payment Methods
             </p>
@@ -81,24 +80,18 @@ export default function PaymentUI() {
               <HoverIcon label="MasterCard" iconSrc="/mastercard.svg" />
               <HoverIcon label="Apple Pay" iconSrc="/applepay.svg" />
               <HoverIcon label="Google Pay" iconSrc="/gpay.svg" />
-              <HoverIcon label="USDT" iconSrc="/usdt.svg" />
-              <HoverIcon label="Bitcoin" iconSrc="/btc.svg" />
-              <HoverIcon label="Ethereum" iconSrc="/eth.svg" />
             </div>
           </div>
 
           {/* RIGHT SIDE BUTTONS */}
-          {/* RIGHT SIDE BUTTONS */}
-          <div className="w-ful md:w-1/3 flex flex-row justify-center gap-4">
-            {/* GET STARTED */}
+          <div className="w-full md:w-1/3 flex flex-row justify-center gap-4">
             <button
               onClick={() => router.push("/signup")}
-              className="px-6 py-3 rounded-lg bg-gradient-to-br from-green-400 to-green-800 text-white font-semibold shadow-md hover:scale-105 transition"
+              className="px-4 py-3 rounded-lg bg-gradient-to-br from-green-400 to-green-800 text-white font-semibold shadow-md hover:scale-105 transition"
             >
               Get Started
             </button>
 
-            {/* PAY NOW */}
             <button
               onClick={() => setOpen(true)}
               className="px-6 py-3 rounded-lg bg-gradient-to-br from-sky-400 via-cyan-500 to-blue-600 text-white font-semibold shadow-md hover:scale-105 transition"
@@ -106,66 +99,58 @@ export default function PaymentUI() {
               Pay Now
             </button>
           </div>
+
         </div>
 
         {/* MODAL */}
         {open && (
-          <div className="absolute right-10 top-40 w-80 bg-[#0d1522]/95 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl p-5 z-50">
-            <div className="flex justify-between items-center mb-4">
-              <p className="text-white font-semibold">Select Payment Method</p>
-              <button
-                className="text-white/50 hover:text-white text-xl"
-                onClick={() => setOpen(false)}
-              >
-                ×
-              </button>
+          <div className="fixed inset-0 bg-white/0 backdrop-blur-sm flex items-center justify-center z-50">
+
+            {/* MODAL BOX */}
+            <div className="w-80 bg-[#0d1522]/20 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl p-5 animate-fadeSlideUp">
+
+              {/* HEADER */}
+              <div className="flex justify-between items-center mb-4">
+                <p className="text-white font-semibold">Select Payment Method</p>
+                <button
+                  className="text-white/50 hover:text-white text-xl "
+                  onClick={() => setOpen(false)}
+                >
+                  <X />
+                </button>
+              </div>
+
+              {/* PAYMENT BUTTONS */}
+              <div className="space-y-3">
+                <ModalButton
+                  label="Visa"
+                  iconSrc="/visa.svg"
+                  onClick={() => redirectToNOWPayments("Visa Payment")}
+                />
+
+                <ModalButton
+                  label="MasterCard"
+                  iconSrc="/mastercard.svg"
+                  onClick={() => redirectToNOWPayments("MasterCard Payment")}
+                />
+
+                <ModalButton
+                  label="Apple Pay"
+                  iconSrc="/applepay.svg"
+                  onClick={() => redirectToNOWPayments("Apple Pay")}
+                />
+
+                <ModalButton
+                  label="Google Pay"
+                  iconSrc="/gpay.svg"
+                  onClick={() => redirectToNOWPayments("Google Pay")}
+                />
+              </div>
             </div>
 
-            <div className="space-y-3">
-              <ModalButton
-                label="Visa"
-                iconSrc="/visa.svg"
-                onClick={() => redirectToNOWPayments("Visa Payment")}
-              />
-
-              <ModalButton
-                label="MasterCard"
-                iconSrc="/mastercard.svg"
-                onClick={() => redirectToNOWPayments("MasterCard Payment")}
-              />
-
-              <ModalButton
-                label="Apple Pay"
-                iconSrc="/applepay.svg"
-                onClick={() => redirectToNOWPayments("Apple Pay")}
-              />
-
-              <ModalButton
-                label="Google Pay"
-                iconSrc="/gpay.svg"
-                onClick={() => redirectToNOWPayments("Google Pay")}
-              />
-
-              <ModalButton
-                label="USDT (TRC20)"
-                iconSrc="/usdt.svg"
-                onClick={() => redirectToNOWPayments("USDT Payment")}
-              />
-
-              <ModalButton
-                label="Bitcoin"
-                iconSrc="/btc.svg"
-                onClick={() => redirectToNOWPayments("Bitcoin Payment")}
-              />
-
-              <ModalButton
-                label="Ethereum"
-                iconSrc="/eth.svg"
-                onClick={() => redirectToNOWPayments("Ethereum Payment")}
-              />
-            </div>
           </div>
         )}
+
       </div>
     </div>
   );

@@ -24,7 +24,7 @@ export default function TrustedSection() {
   }, []);
 
   return (
-    <section className="relative px-6 md:px-20 bg-[#0b1120] text-white overflow-hidden py-24">
+    <section className="relative px-6 md:px-20 bg-[#0b1120] text-white overflow-hidden">
 
       {/* BACKGROUND WORLD MAP */}
       <img
@@ -140,7 +140,7 @@ function CounterCard({ title, end, suffix, gradient }) {
 -------------------------- */
 function BrandsCarousel() {
   return (
-    <div className="relative z-10 mt-20">
+    <div className="relative z-10">
       <p className="text-center text-white/50 tracking-widest mb-6">
         TRUSTED BY BUSINESSES & USERS GLOBALLY
       </p>
