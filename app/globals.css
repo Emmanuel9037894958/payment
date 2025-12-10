@@ -1,0 +1,23 @@
+@import "tailwindcss";
+
+/* Remove forced white background */
+body {
+  background: transparent !important;
+  color: #fff;
+  margin: 0;
+  padding: 0;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Animations */
+@keyframes fadeInUp {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+.animate-fadeInUp { animation: fadeInUp 0.9s ease forwards; }
+
+@keyframes fadeSlideUp {
+  0% { opacity: 0; transform: translateY(15px) scale(0.97); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+.animate-fadeSlideUp { animation: fadeSlideUp 0.4s ease-out forwards; }

@@ -1,0 +1,6 @@
+<svg width="140" height="40" viewBox="0 0 200 50" xmlns="http://www.w3.org/2000/svg">
+  <rect width="200" height="50" rx="10" fill="#8b5cf6"/>
+  <text x="50%" y="50%" fill="white" font-size="20" font-family="Arial" dominant-baseline="middle" text-anchor="middle">
+    FinServe
+  </text>
+</svg>
