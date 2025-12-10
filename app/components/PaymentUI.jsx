@@ -9,31 +9,6 @@ export default function PaymentUI() {
   const [open, setOpen] = useState(false);
   const router = useRouter();
 
-  /* NOWPayments Redirect */
-  const redirectToNOWPayments = async (method) => {
-    try {
-      const res = await fetch("/api/create", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount: 50,
-          currency: "usd",
-          description: method,
-        }),
-      });
-
-      const data = await res.json();
-      if (data.invoice_url) {
-        window.location.href = data.invoice_url;
-      } else {
-        alert("NOWPayments API not configured.");
-      }
-    } catch (err) {
-      console.error(err);
-      alert("NOWPayments error. Check console.");
-    }
-  };
-
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden py-30 mb-0">
 
@@ -104,16 +79,16 @@ export default function PaymentUI() {
 
         {/* MODAL */}
         {open && (
-          <div className="fixed inset-0 bg-white/0 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
 
             {/* MODAL BOX */}
-            <div className="w-80 bg-[#0d1522]/20 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl p-5 animate-fadeSlideUp">
+            <div className="w-80 bg-[#0d1522]/70 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl p-5 animate-fadeSlideUp">
 
               {/* HEADER */}
               <div className="flex justify-between items-center mb-4">
                 <p className="text-white font-semibold">Select Payment Method</p>
                 <button
-                  className="text-white/50 hover:text-white text-xl "
+                  className="text-white/50 hover:text-white text-xl"
                   onClick={() => setOpen(false)}
                 >
                   <X />
@@ -125,25 +100,25 @@ export default function PaymentUI() {
                 <ModalButton
                   label="Visa"
                   iconSrc="/visa.svg"
-                  onClick={() => redirectToNOWPayments("Visa Payment")}
+                  onClick={() => router.push("/card?method=visa")}
                 />
 
                 <ModalButton
                   label="MasterCard"
                   iconSrc="/mastercard.svg"
-                  onClick={() => redirectToNOWPayments("MasterCard Payment")}
+                  onClick={() => router.push("/card?method=mastercard")}
                 />
 
                 <ModalButton
                   label="Apple Pay"
                   iconSrc="/applepay.svg"
-                  onClick={() => redirectToNOWPayments("Apple Pay")}
+                  onClick={() => router.push("/card?method=applepay")}
                 />
 
                 <ModalButton
                   label="Google Pay"
                   iconSrc="/gpay.svg"
-                  onClick={() => redirectToNOWPayments("Google Pay")}
+                  onClick={() => router.push("/card?method=gpay")}
                 />
               </div>
             </div>
