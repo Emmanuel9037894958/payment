@@ -1,13 +1,31 @@
 "use client";
 
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { X } from "lucide-react";
+import { auth } from "@/app/firebase";
+import { onAuthStateChanged, signOut } from "firebase/auth";
 
 export default function PaymentUI() {
   const [open, setOpen] = useState(false);
+  const [user, setUser] = useState(null);
   const router = useRouter();
+
+  // 🔥 Detect logged-in user
+  useEffect(() => {
+    const unsub = onAuthStateChanged(auth, (currentUser) => {
+      setUser(currentUser);
+    });
+
+    return () => unsub();
+  }, []);
+
+  // 🔥 Logout function
+  const handleLogout = async () => {
+    await signOut(auth);
+    router.push("/login");
+  };
 
   return (
     <div className="relative min-h-screen flex items-center justify-center overflow-hidden py-30 mb-0">
@@ -60,13 +78,25 @@ export default function PaymentUI() {
 
           {/* RIGHT SIDE BUTTONS */}
           <div className="w-full md:w-1/3 flex flex-row justify-center gap-4">
-            <button
-              onClick={() => router.push("/signup")}
-              className="px-4 py-3 rounded-lg bg-gradient-to-br from-green-400 to-green-800 text-white font-semibold shadow-md hover:scale-105 transition"
-            >
-              Get Started
-            </button>
 
+            {/* 🔥 GET STARTED → LOGOUT */}
+            {!user ? (
+              <button
+                onClick={() => router.push("/signup")}
+                className="px-4 py-3 rounded-lg bg-gradient-to-br from-green-400 to-green-800 text-white font-semibold shadow-md hover:scale-105 transition"
+              >
+                Get Started
+              </button>
+            ) : (
+              <button
+                onClick={handleLogout}
+                className="px-4 py-3 rounded-lg bg-red-600 text-white font-semibold shadow-md hover:scale-105 transition"
+              >
+                Logout
+              </button>
+            )}
+
+            {/* PAY NOW */}
             <button
               onClick={() => setOpen(true)}
               className="px-6 py-3 rounded-lg bg-gradient-to-br from-sky-400 via-cyan-500 to-blue-600 text-white font-semibold shadow-md hover:scale-105 transition"
@@ -74,17 +104,13 @@ export default function PaymentUI() {
               Pay Now
             </button>
           </div>
-
         </div>
 
         {/* MODAL */}
         {open && (
           <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-
-            {/* MODAL BOX */}
             <div className="w-80 bg-[#0d1522]/70 backdrop-blur-xl rounded-2xl border border-white/20 shadow-2xl p-5 animate-fadeSlideUp">
 
-              {/* HEADER */}
               <div className="flex justify-between items-center mb-4">
                 <p className="text-white font-semibold">Select Payment Method</p>
                 <button
@@ -95,8 +121,7 @@ export default function PaymentUI() {
                 </button>
               </div>
 
-              {/* PAYMENT BUTTONS */}
-              <div className="space-y-3">
+              <div className="space-y-3 rounded-full">
                 <ModalButton
                   label="Visa"
                   iconSrc="/visa.svg"
@@ -122,10 +147,8 @@ export default function PaymentUI() {
                 />
               </div>
             </div>
-
           </div>
         )}
-
       </div>
     </div>
   );
