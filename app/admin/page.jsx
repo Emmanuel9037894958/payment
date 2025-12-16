@@ -21,7 +21,7 @@ export default function AdminLoginPage() {
     if (data.success) {
       window.location.href = "/dashboard";
     } else {
-      setError("Incorrect password!");
+      setError("Incorrect password ❗❗");
     }
   }
 
@@ -65,7 +65,7 @@ export default function AdminLoginPage() {
         </div>
 
         {error && (
-          <p className="text-red-400 text-sm mb-2 text-center">{error}</p>
+          <p className="text-red-600 text-lg font-bold mb-2 text-center">{error}</p>
         )}
 
         <button

@@ -1,270 +1,272 @@
 "use client";
 
-import { useSearchParams } from "next/navigation";
 import { useState } from "react";
-import { Eye, EyeOff, Lock, CreditCard, Loader2 } from "lucide-react";
+import {
+  Lock,
+  Eye,
+  EyeOff,
+  CreditCard,
+  Loader2,
+  CheckCircle,
+} from "lucide-react";
 
-export default function AdvancedCardPaymentPage() {
-  const params = useSearchParams();
-  const methodParam = params.get("method");
-  const methods = ["visa", "mastercard", "applepay", "gpay"];
-  const method = methods.includes(methodParam) ? methodParam : null;
+/* ---------------- PAYMENT METHODS ---------------- */
+const METHODS = [
+  { id: "visa", label: "Visa", icon: "/visa.svg", currency: "usd" },
+  { id: "mastercard", label: "Mastercard", icon: "/mastercard.svg", currency: "usd" },
+  { id: "applepay", label: "Apple Pay", icon: "/applepay.svg", currency: "eur" },
+  { id: "gpay", label: "Google Pay", icon: "/gpay.svg", currency: "usd" },
+];
 
-  const icons = {
-    visa: "/visa.svg",
-    mastercard: "/mastercard.svg",
-    applepay: "/applepay.svg",
-    gpay: "/gpay.svg",
-  };
-
-  const accentGradient = "from-purple-600 to-pink-500";
-  const accentShadow = "shadow-[0_0px_30px_rgba(236,72,153,0.5)]";
-
-  // FORM STATES
+export default function CombinedPaymentPage() {
+  const [method, setMethod] = useState("visa");
+  const [amount, setAmount] = useState("");
   const [cardNumber, setCardNumber] = useState("");
   const [expiry, setExpiry] = useState("");
   const [cvv, setCvv] = useState("");
   const [name, setName] = useState("");
+
   const [loading, setLoading] = useState(false);
+  const [success, setSuccess] = useState(false);
+  const [errors, setErrors] = useState({});
 
-  const [errors, setErrors] = useState({
-    cardNumber: "",
-    expiry: "",
-    cvv: "",
-    name: "",
-  });
-
-  // CARD VALIDATION
+  /* ---------------- VALIDATION ---------------- */
   const validateCardNumber = (num) => {
     const clean = num.replace(/\s/g, "");
     if (clean.length < 16) return false;
 
     let sum = 0;
-    let shouldDouble = false;
-
+    let alt = false;
     for (let i = clean.length - 1; i >= 0; i--) {
-      let digit = parseInt(clean[i]);
-
-      if (shouldDouble) {
-        digit *= 2;
-        if (digit > 9) digit -= 9;
+      let n = parseInt(clean[i]);
+      if (alt) {
+        n *= 2;
+        if (n > 9) n -= 9;
       }
-
-      sum += digit;
-      shouldDouble = !shouldDouble;
+      sum += n;
+      alt = !alt;
     }
-
     return sum % 10 === 0;
   };
 
-  // EXPIRY FORMAT
-  const formatExpiry = (value) => {
-    const digits = value.replace(/\D/g, "").slice(0, 4);
-    if (digits.length >= 3) {
-      return digits.slice(0, 2) + "/" + digits.slice(2);
-    }
-    return digits;
+  const formatExpiry = (v) => {
+    const d = v.replace(/\D/g, "").slice(0, 4);
+    return d.length >= 3 ? d.slice(0, 2) + "/" + d.slice(2) : d;
   };
 
-  // ----------------------------------------
-  // 🔥 HANDLE PAY → REDIRECT TO NOWPAYMENTS
-  // ----------------------------------------
+  /* ---------------- PAY HANDLER ---------------- */
   const handlePay = async () => {
-    const newErrors = {};
+    const errs = {};
 
-    if (!validateCardNumber(cardNumber)) newErrors.cardNumber = "Invalid card number";
-    if (!expiry || expiry.length < 5) newErrors.expiry = "Invalid expiry";
-    if (cvv.length < 3) newErrors.cvv = "Invalid CVV";
-    if (!name.trim()) newErrors.name = "Enter cardholder name";
+    if (!validateCardNumber(cardNumber)) errs.cardNumber = "Invalid card number";
+    if (expiry.length < 5) errs.expiry = "Invalid expiry";
+    if (cvv.length < 3) errs.cvv = "Invalid CVV";
+    if (!name.trim()) errs.name = "Enter cardholder name";
+    if (!amount || Number(amount) <= 0) errs.amount = "Enter valid amount";
 
-    setErrors(newErrors);
+    setErrors(errs);
+    if (Object.keys(errs).length > 0) return;
 
-    if (Object.keys(newErrors).length > 0) return;
+    const selectedMethod = METHODS.find((m) => m.id === method);
+    if (!selectedMethod) return;
 
     setLoading(true);
+    setSuccess(true);
 
     try {
       const res = await fetch("/api/create-payment", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          amount: 50,
-          currency: "usd",
-          description: `Card payment by ${name}`,
+          amount: Number(amount),
+          currency: selectedMethod.currency,
+          description: `Payment via ${method} by ${name}`,
         }),
       });
 
       const data = await res.json();
 
       if (data.url) {
-        window.location.href = data.url; // redirect to NOWPayments checkout
-      } else {
-        alert("NOWPayments error: " + (data.error || "Unknown error"));
+        setTimeout(() => {
+          window.location.href = data.url;
+        }, 2200);
       }
     } catch (err) {
       console.error(err);
-      alert("Payment request failed.");
     }
-
-    setLoading(false);
   };
 
+  const activeCurrency =
+    METHODS.find((m) => m.id === method)?.currency.toUpperCase() || "USD";
+
   return (
-    <div className="min-h-screen bg-gray-800 flex items-center justify-center p-6 relative overflow-hidden font-sans py-44">
-      
-      {/* Background Glow */}
-      <div className="absolute top-[-5rem] left-[-5rem] w-80 h-80 bg-blue-500/30 blur-[150px] rounded-full"></div>
-      <div className="absolute bottom-[-5rem] right-[-5rem] w-96 h-96 bg-pink-500/30 blur-[180px] rounded-full"></div>
-      
-      {/* Card Container */}
-      <div 
-        className={`relative w-full max-w-md bg-gray- backdrop-blur-2xl border rounded-3xl p-8 sm:p-10
-                    shadow-[0_0_80px_rgba(0,0,0,0.5)]
-                    hover:scale-[1.01] transition-all duration-500`}
-      >
+    <div className="min-h-screen bg-[#0b0f1a] flex items-center justify-center p-6 relative overflow-hidden py-32">
 
-        {/* Header */}
-        <div className="flex flex-col items-center mb-10">
-          {method && (
-            <img src={icons[method]} className="w-10 h-10 object-contain rounded-full mb-10 bg-white" />
-          )}
+      <div className="relative w-full max-w-md bg-white/10 backdrop-blur-2xl border border-white/20 rounded-3xl p-8 shadow-2xl">
 
-          <h2 className="text-center text-white text-3xl font-extrabold pb-4">
-            Secure Card Payment
-          </h2>
-
-          <p className="text-sm text-white/80 flex items-center">
-            <Lock className="w-4 h-4 mr-1 text-green-400" /> Your connection is encrypted.
-          </p>
+        {/* METHOD SELECT */}
+        <div className="grid grid-cols-2 gap-3 mb-8">
+          {METHODS.map((m) => (
+            <button
+              key={m.id}
+              onClick={() => setMethod(m.id)}
+              className={`flex items-center gap-2 px-4 py-3 rounded-xl border transition
+                ${
+                  method === m.id
+                    ? "border-purple-500 bg-purple-500/20 shadow-lg"
+                    : "border-white/20 bg-gray-800/40 hover:bg-gray-700/40"
+                }`}
+            >
+              <img src={m.icon} className="w-6 h-6" />
+              <span className="text-white text-sm font-semibold">{m.label}</span>
+            </button>
+          ))}
         </div>
 
-        {/* FORM INPUTS */}
-        <AdvancedInput
+        <h2 className="text-center text-white text-3xl font-bold mb-2">
+          Secure Payment
+        </h2>
+
+        <p className="text-center text-white/70 flex justify-center items-center mb-8">
+          <Lock className="w-4 h-4 mr-1 text-green-400" />
+          Encrypted & Secure
+        </p>
+
+        {/* AMOUNT */}
+        <Input
+          label={`Amount (${activeCurrency})`}
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          placeholder="Enter amount"
+          error={errors.amount}
+        />
+
+        {/* CARD NUMBER */}
+        <Input
           label="Card Number"
-          placeholder="0000 0000 0000 0000"
           value={cardNumber}
+          placeholder="0000 0000 0000 0000"
           onChange={(e) => {
             let v = e.target.value.replace(/\D/g, "").slice(0, 16);
             v = v.match(/.{1,4}/g)?.join(" ") || "";
             setCardNumber(v);
           }}
-          icon={<CreditCard className="text-white" />}
+          icon={<CreditCard />}
           error={errors.cardNumber}
         />
 
-        <div className="flex gap-4 mt-6">
-          <AdvancedInput
-            label="Expiry (MM/YY)"
+        {/* EXPIRY + CVV */}
+        <div className="flex gap-4 mt-5">
+          <Input
+            label="Expiry"
             placeholder="MM/YY"
             value={expiry}
             onChange={(e) => setExpiry(formatExpiry(e.target.value))}
-            maxLength={5}
             error={errors.expiry}
           />
-
-          <CVVAdvanced
-            value={cvv}
-            onChange={setCvv}
-            error={errors.cvv}
-          />
+          <CVV value={cvv} onChange={setCvv} error={errors.cvv} />
         </div>
 
-        <div className="mt-6">
-          <AdvancedInput
-            label="Cardholder Name"
-            placeholder="cardholder name"
-            value={name}
-            onChange={(e) => setName(e.target.value)}
-            error={errors.name}
-          />
-        </div>
+        {/* NAME */}
+        <Input
+          label="Cardholder Name"
+          placeholder="Alex Johnson"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          error={errors.name}
+        />
 
         {/* PAY BUTTON */}
         <button
           onClick={handlePay}
           disabled={loading}
-          className={`w-full py-4 mt-10 bg-gradient-to-r ${accentGradient}
-                      text-white rounded-xl font-bold text-lg transition-all ${accentShadow}
-                      ${loading ? "opacity-70" : "hover:opacity-90 active:scale-95"}`}
+          className="w-full mt-8 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-500
+                     text-white font-bold text-lg hover:opacity-90 transition"
         >
           {loading ? (
-            <div className="flex items-center justify-center gap-2">
-              <Loader2 className="animate-spin" /> Processing...
-            </div>
+            <span className="flex items-center justify-center gap-2">
+              <Loader2 className="animate-spin" /> Processing
+            </span>
           ) : (
             "Pay Now"
           )}
         </button>
-
       </div>
+
+      {/* SUCCESS MODAL */}
+      {success && (
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+          <div className="relative bg-white rounded-3xl p-10 text-center max-w-sm w-full shadow-2xl">
+            <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-100 flex items-center justify-center">
+              <CheckCircle className="w-12 h-12 text-green-500" />
+            </div>
+            <h3 className="text-2xl font-extrabold text-gray-900">
+             CardPayment Initialized 🎉
+            </h3>
+            <p className="text-gray-600 mt-3 text-sm">
+              Redirecting you securely to the payment processing…
+            </p>
+            <div className="mt-6 flex justify-center gap-2 text-gray-500 text-sm">
+              <Loader2 className="animate-spin w-4 h-4" />
+              Please wait
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
 
-/* FLOATING INPUT */
-function AdvancedInput({ label, placeholder, value, onChange, icon, error, ...props }) {
+/* ---------------- INPUT ---------------- */
+function Input({ label, value, onChange, icon, error, placeholder }) {
   return (
-    <div className="relative w-full">
-      <label
-        className={`absolute left-4 px-1 transition-all text-xs
-          ${!value ? "top-1/2 -translate-y-1/2 text-white/80 text-base"
-                   : "-top-2 bg-gray-900 text-white z-10"}`}
-      >
-        {label}
-      </label>
-
+    <div className="relative w-full mt-5">
+      <label className="text-white/80 text-sm">{label}</label>
       <div className="relative">
-        {icon && <div className="absolute left-4 top-1/2 -translate-y-1/2">{icon}</div>}
-
+        {icon && (
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 text-white/70">
+            {icon}
+          </div>
+        )}
         <input
-          {...props}
           value={value}
           onChange={onChange}
           placeholder={placeholder}
-          className={`w-full p-4 text-white bg-gray-800 border rounded-xl placeholder:text-white/60
-            ${icon ? "pl-12" : ""}
-            ${error ? "border-red-500" : "border-gray-600"}
-            focus:border-pink-500 outline-none`}
+          className={`w-full mt-1 p-3 rounded-xl bg-gray-800 text-white border
+            placeholder:text-white/40
+            ${icon ? "pl-10" : ""}
+            ${error ? "border-red-500" : "border-gray-600"}`}
         />
       </div>
-
       {error && <p className="text-red-400 text-xs mt-1">{error}</p>}
     </div>
   );
 }
 
-/* CVV WITH TOGGLE PREVIEW */
-function CVVAdvanced({ value, onChange, error }) {
+/* ---------------- CVV ---------------- */
+function CVV({ value, onChange, error }) {
   const [show, setShow] = useState(false);
 
   return (
-    <div className="relative w-full">
-      <label
-        className={`absolute left-4 px-1 transition-all text-xs
-          ${!value ? "top-1/2 -translate-y-1/2 text-white/80 text-base"
-                   : "-top-2 bg-gray-900 z-10"}`}
-      >
-        CVV
-      </label>
-
+    <div className="relative w-full mt-5">
+      <label className="text-white/80 text-sm">CVV</label>
       <input
         type={show ? "text" : "password"}
         value={value}
-        onChange={(e) => onChange(e.target.value.replace(/\D/g, "").slice(0, 4))}
-        placeholder="***"
-        className={`w-full p-4 text-white bg-gray-800 border rounded-xl placeholder:text-white/60
-          ${error ? "border-red-500" : "border-gray-600"}
-          focus:border-pink-500 outline-none`}
+        placeholder="123"
+        onChange={(e) =>
+          onChange(e.target.value.replace(/\D/g, "").slice(0, 4))
+        }
+        className={`w-full mt-1 p-3 rounded-xl bg-gray-800 text-white border
+          ${error ? "border-red-500" : "border-gray-600"}`}
       />
-
       <button
         type="button"
         onClick={() => setShow(!show)}
-        className="absolute right-4 top-1/2 -translate-y-1/2 text-white/70"
+        className="absolute right-2 top-1/2 -translate-y-1/2 bg-gray-800 p-2 rounded-lg text-white/70 hover:text-white"
       >
         {show ? <Eye size={18} /> : <EyeOff size={18} />}
       </button>
-
       {error && <p className="text-red-400 text-xs mt-1">{error}</p>}
     </div>
   );

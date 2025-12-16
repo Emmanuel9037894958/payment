@@ -41,7 +41,7 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#0b1120] px-6 relative overflow-hidden py-30">
+    <div className="min-h-screen flex items-center justify-center bg-[#0b1120] px-6 relative overflow-hidden py-3">
       {/* BACKGROUND GLOWS */}
       <div className="absolute top-0 left-0 w-80 h-80 bg-blue-500/30 blur-[110px] rounded-full"></div>
       <div className="absolute bottom-0 right-0 w-80 h-80 bg-green-400/20 blur-[120px] rounded-full"></div>

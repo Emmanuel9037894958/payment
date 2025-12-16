@@ -35,7 +35,7 @@ export default async function DashboardPage() {
   const payments = await res.json();
 
   return (
-    <div className="min-h-screen bg-[#040816] text-white p-6 md:p-10">
+    <div className="min-h-screen bg-[#040816] text-white p-6 md:p-10 py-32">
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
         <div>
@@ -44,7 +44,7 @@ export default async function DashboardPage() {
         </div>
 
         {/* Logout */}
-        <form action="/api/admin/logout" method="POST">
+        <form action="/" method="POST">
           <button
             className="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 font-semibold"
           >

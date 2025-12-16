@@ -69,7 +69,7 @@ export default function Footer() {
 
       {/* Bottom line */}
       <div className="border-t border-white/10 mt-12 pt-6 text-center text-white/40 text-sm">
-        © {new Date().getFullYear()} LumoPay. All rights reserved.
+        © {new Date().getFullYear()} Zentrapay. All rights reserved.
       </div>
     </footer>
   );

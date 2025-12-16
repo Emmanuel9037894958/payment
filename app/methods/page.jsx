@@ -11,7 +11,7 @@ export default function PaymentMethodsPage() {
         </h1>
 
         <p className="text-gray-600 mt-4 max-w-2xl mx-auto">
-          LumoPay enables fast, secure, and flexible payments through multiple global and local payment options.
+          Zentrapay enables fast, secure, and flexible payments through multiple global and local payment options.
         </p>
       </section>
 
