@@ -24,7 +24,7 @@ export default function TrustedSection() {
   }, []);
 
   return (
-    <section className="relative px-6 md:px-20 bg-[#0b1120] text-white overflow-hidden">
+    <section className="relative px-3 md:px-20 bg-[#0b1120] text-white overflow-hidden">
 
       {/* BACKGROUND WORLD MAP */}
       <img

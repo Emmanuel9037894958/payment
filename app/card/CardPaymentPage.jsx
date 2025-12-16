@@ -100,34 +100,53 @@ export default function CombinedPaymentPage() {
     METHODS.find((m) => m.id === method)?.currency.toUpperCase() || "USD";
 
   return (
-    <div className="min-h-screen bg-[#0b0f1a] flex items-center justify-center p-6 relative overflow-hidden py-32">
-
-      <div className="relative w-full max-w-md bg-white/10 backdrop-blur-2xl border border-white/20 rounded-3xl p-8 shadow-2xl">
-
-        {/* METHOD SELECT */}
-        <div className="grid grid-cols-2 gap-3 mb-8">
+    <div
+      className="
+        min-h-screen bg-[#0b0f1a]
+        flex items-center justify-center
+        px-4 sm:px-6 md:px-8
+        py-32 sm:py-24 md:py-32
+        relative overflow-hidden
+      "
+    >
+      {/* MAIN CARD */}
+      <div
+        className="
+          relative w-full
+          max-w-sm sm:max-w-md
+          bg-white/10 backdrop-blur-2xl
+          border border-white/20
+          rounded-3xl
+          p-5 sm:p-6 md:p-8
+          shadow-2xl
+        "
+      >
+        {/* PAYMENT METHODS */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mb-8">
           {METHODS.map((m) => (
             <button
               key={m.id}
               onClick={() => setMethod(m.id)}
-              className={`flex items-center gap-2 px-4 py-3 rounded-xl border transition
+              className={`flex items-center justify-center gap-2 px-3 py-3 rounded-xl border transition
                 ${
                   method === m.id
                     ? "border-purple-500 bg-purple-500/20 shadow-lg"
                     : "border-white/20 bg-gray-800/40 hover:bg-gray-700/40"
                 }`}
             >
-              <img src={m.icon} className="w-6 h-6" />
-              <span className="text-white text-sm font-semibold">{m.label}</span>
+              <img src={m.icon} className="w-5 h-5 sm:w-6 sm:h-6" />
+              <span className="text-white text-xs sm:text-sm font-semibold">
+                {m.label}
+              </span>
             </button>
           ))}
         </div>
 
-        <h2 className="text-center text-white text-3xl font-bold mb-2">
+        <h2 className="text-center text-white text-2xl sm:text-3xl font-bold mb-2">
           Secure Payment
         </h2>
 
-        <p className="text-center text-white/70 flex justify-center items-center mb-8">
+        <p className="text-center text-white/70 flex justify-center items-center mb-8 text-sm sm:text-base">
           <Lock className="w-4 h-4 mr-1 text-green-400" />
           Encrypted & Secure
         </p>
@@ -156,7 +175,7 @@ export default function CombinedPaymentPage() {
         />
 
         {/* EXPIRY + CVV */}
-        <div className="flex gap-4 mt-5">
+        <div className="flex flex-row sm:flex-row gap-4 mt-5">
           <Input
             label="Expiry"
             placeholder="MM/YY"
@@ -180,8 +199,15 @@ export default function CombinedPaymentPage() {
         <button
           onClick={handlePay}
           disabled={loading}
-          className="w-full mt-8 py-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-500
-                     text-white font-bold text-lg hover:opacity-90 transition"
+          className="
+            w-full mt-8
+            py-3 sm:py-4
+            rounded-xl
+            bg-gradient-to-r from-purple-600 to-pink-500
+            text-white font-bold
+            text-base sm:text-lg
+            hover:opacity-90 transition
+          "
         >
           {loading ? (
             <span className="flex items-center justify-center gap-2">
@@ -195,16 +221,25 @@ export default function CombinedPaymentPage() {
 
       {/* SUCCESS MODAL */}
       {success && (
-        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="relative bg-white rounded-3xl p-10 text-center max-w-sm w-full shadow-2xl">
+        <div className="fixed inset-0 bg-black/70 backdrop-blur-sm flex items-center justify-center z-50 px-4">
+          <div
+            className="
+              relative bg-white rounded-3xl
+              p-6 sm:p-8 md:p-10
+              text-center
+              max-w-xs sm:max-w-sm
+              w-full
+              shadow-2xl
+            "
+          >
             <div className="w-20 h-20 mx-auto mb-6 rounded-full bg-green-100 flex items-center justify-center">
               <CheckCircle className="w-12 h-12 text-green-500" />
             </div>
             <h3 className="text-2xl font-extrabold text-gray-900">
-             CardPayment Initialized 🎉
+              Card Payment Initialized 🎉
             </h3>
             <p className="text-gray-600 mt-3 text-sm">
-              Redirecting you securely to the payment processing…
+              Redirecting you securely to the payment processor…
             </p>
             <div className="mt-6 flex justify-center gap-2 text-gray-500 text-sm">
               <Loader2 className="animate-spin w-4 h-4" />

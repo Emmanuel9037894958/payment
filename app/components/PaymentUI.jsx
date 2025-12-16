@@ -48,11 +48,11 @@ export default function PaymentUI() {
       />
 
       {/* Glow */}
-      <div className="absolute -top-40 -left-40 w-96 h-96 bg-sky-600/40 blur-3xl rounded-full"></div>
+      <div className="absolute -top-40 -left-40 w-96 h-96 bg-sky-00/40 blur-3  xl rounded-full"></div>
       <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-indigo-500/30 blur-3xl rounded-full"></div>
 
       {/* CARD */}
-      <div className="relative z-20 w-[90%] max-w-4xl rounded-3xl bg-white/10 border border-white/20 p-10">
+      <div className="relative z-20 w-[90%] max-w-4xl rounded-3xl bg-white/15 border border-white/40 p-10">
 
         <h1 className="text-4xl font-bold text-white mb-3">
           Complete Your Secure Payment
@@ -63,7 +63,7 @@ export default function PaymentUI() {
         </p>
 
         {/* PAYMENT OPTIONS */}
-        <div className="flex gap-5 flex-wrap mb-8">
+        <div className="flex gap-5 flex-wrap mb-">
           <PayIcon label="Visa" icon="/visa.svg" onClick={() => handleSelectMethod("visa")} />
           <PayIcon label="MasterCard" icon="/mastercard.svg" onClick={() => handleSelectMethod("mastercard")} />
           <PayIcon label="Apple Pay" icon="/applepay.svg" onClick={() => handleSelectMethod("applepay")} />
@@ -82,7 +82,7 @@ export default function PaymentUI() {
           ) : (
             <button
               onClick={handleLogout}
-              className="px-6 py-3 rounded-lg bg-red-600 text-white font-semibold"
+              className="px-6 py-3 mt-11 rounded-lg bg-red-600 text-white font-semibold"
             >
               Logout
             </button>
@@ -94,7 +94,7 @@ export default function PaymentUI() {
       {loadingMethod && (
         <div className="fixed inset-0 bg-black/80 flex flex-col items-center justify-center z-50">
           <Loader2 className="w-16 h-16 text-white animate-spin mb-6" />
-          <p className="text-white text-lg font-semibold">
+          <p className="text-white text-lg font-semibold text-center">
             Preparing secure {loadingMethod.toUpperCase()} payment…
           </p>
         </div>
