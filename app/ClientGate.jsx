@@ -9,7 +9,7 @@ export default function ClientGate({ children }) {
   useEffect(() => {
     const timer = setTimeout(() => {
       setReady(true);
-    }, 20000); // ⏱️ FORCE 20 SECONDS
+    }, 10000); // ⏱️ FORCE 20 SECONDS
 
     return () => clearTimeout(timer);
   }, []);
