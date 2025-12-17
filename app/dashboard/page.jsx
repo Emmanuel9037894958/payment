@@ -66,7 +66,7 @@
 export default function DashboardPage() {
   return (
     <div style={{ color: "white", padding: 40 }}>
-      <h1>Dashboard is rendering</h1>
+      <h1 className="py-44">Dashboard is rendering</h1>
     </div>
   );
 }
