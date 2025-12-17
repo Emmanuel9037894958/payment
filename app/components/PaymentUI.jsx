@@ -103,7 +103,7 @@ export default function PaymentUI() {
   );
 }
 
-/* PAYMENT ICON */
+
 function PayIcon({ icon, label, onClick }) {
   return (
     <button
