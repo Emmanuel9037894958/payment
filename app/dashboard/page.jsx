@@ -1,8 +1,8 @@
 import DashboardTable from "./DashboardTable";
 
 export default async function DashboardPage() {
-  // Fetch payments (server-side, safe)
-  const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/payments`, {
+  // ✅ RELATIVE FETCH (SAFE IN PROD)
+  const res = await fetch("/api/payments", {
     cache: "no-store",
   });
 
@@ -31,7 +31,6 @@ export default async function DashboardPage() {
         </form>
       </div>
 
-      {/* Client Component */}
       <DashboardTable payments={payments} />
     </div>
   );
