@@ -1,32 +1,8 @@
-import { cookies } from "next/headers";
 import DashboardTable from "./DashboardTable";
 
 export default async function DashboardPage() {
-  // ✅ cookies() is NOT async
-  const cookieStore = cookies();
-  const auth = cookieStore.get("admin_auth");
-
-  if (!auth) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-[#061224] text-white">
-        <div className="text-center">
-          <h1 className="text-xl font-bold mb-2">Access Denied</h1>
-          <p className="text-white/70 mb-4">
-            You must be logged in as admin to view this page.
-          </p>
-          <a
-            href="/admin-login"
-            className="text-blue-400 hover:text-blue-500 underline"
-          >
-            Go to Admin Login
-          </a>
-        </div>
-      </div>
-    );
-  }
-
-  // ✅ RELATIVE fetch (works in dev + prod)
-  const res = await fetch("/api/payments", {
+  // Fetch payments (server-side, safe)
+  const res = await fetch(`${process.env.NEXT_PUBLIC_SITE_URL}/api/payments`, {
     cache: "no-store",
   });
 
@@ -48,14 +24,14 @@ export default async function DashboardPage() {
         </div>
 
         {/* Logout */}
-        <form action="/admin-login" method="GET">
+        <form action="/api/admin/logout" method="POST">
           <button className="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 font-semibold">
             Logout
           </button>
         </form>
       </div>
 
-      {/* Client component */}
+      {/* Client Component */}
       <DashboardTable payments={payments} />
     </div>
   );
