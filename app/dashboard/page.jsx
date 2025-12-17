@@ -2,8 +2,8 @@ import { cookies } from "next/headers";
 import DashboardTable from "./DashboardTable";
 
 export default async function DashboardPage() {
-  // Protect page
-  const cookieStore = await cookies();
+  // ✅ cookies() is NOT async
+  const cookieStore = cookies();
   const auth = cookieStore.get("admin_auth");
 
   if (!auth) {
@@ -25,13 +25,15 @@ export default async function DashboardPage() {
     );
   }
 
-  // FETCH PAYMENT DATA FROM API
-  const apiUrl =
-    process.env.NODE_ENV === "development"
-      ? "http://localhost:3000/api/payments"
-      : `${process.env.NEXT_PUBLIC_BASE_URL}/api/payments`;
+  // ✅ RELATIVE fetch (works in dev + prod)
+  const res = await fetch("/api/payments", {
+    cache: "no-store",
+  });
 
-  const res = await fetch(apiUrl, { cache: "no-store" });
+  if (!res.ok) {
+    throw new Error("Failed to fetch payments");
+  }
+
   const payments = await res.json();
 
   return (
@@ -40,20 +42,20 @@ export default async function DashboardPage() {
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
         <div>
           <h1 className="text-3xl md:text-4xl font-bold">Admin Dashboard</h1>
-          <p className="text-white/60 mt-1">View and manage all payment activity.</p>
+          <p className="text-white/60 mt-1">
+            View and manage all payment activity.
+          </p>
         </div>
 
         {/* Logout */}
-        <form action="/" method="POST">
-          <button
-            className="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 font-semibold"
-          >
+        <form action="/admin-login" method="GET">
+          <button className="px-4 py-2 rounded-lg bg-red-500 hover:bg-red-600 font-semibold">
             Logout
           </button>
         </form>
       </div>
 
-      {/* Pass data to client table */}
+      {/* Client component */}
       <DashboardTable payments={payments} />
     </div>
   );
