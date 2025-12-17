@@ -1,7 +1,7 @@
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-import ClientProviders from "./ClientProviders";
+// import ClientProviders from "./ClientProviders";
 
 export const metadata = {
   title: "ZentraPay",
@@ -12,11 +12,9 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <body className="antialiased">
-        <ClientProviders>
-          <Navbar />
-          {children}
-          <Footer />
-        </ClientProviders>
+        <Navbar />
+        {children}
+        <Footer />
       </body>
     </html>
   );
