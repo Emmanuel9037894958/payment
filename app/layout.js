@@ -1,7 +1,6 @@
 import "./globals.css";
 import Navbar from "./components/Navbar";
 import Footer from "./components/Footer";
-// import ClientProviders from "./ClientProviders";
 
 export const metadata = {
   title: "ZentraPay",
