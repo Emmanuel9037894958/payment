@@ -1,15 +1,19 @@
-import React from 'react'
-import PaymentUI from './components/PaymentUI'
-import TrustedSection from './components/TrustedSection'
+import React from "react";
+import AppLoader from "./components/AppLoader";
+import PaymentUI from "./components/PaymentUI";
+import TrustedSection from "./components/TrustedSection";
 
-
-function page() {
+export default function Page() {
   return (
-    <div>
-     <PaymentUI />
-     <TrustedSection />
-    </div>
-  )
-}
+    <>
+      {/* ⏳ Slow professional loader (10 seconds) */}
+      <AppLoader />
 
-export default page
+      {/* Actual page content */}
+      <div>
+        <PaymentUI />
+        <TrustedSection />
+      </div>
+    </>
+  );
+}
