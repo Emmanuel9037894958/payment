@@ -12,11 +12,12 @@ import {
 
 /* ---------------- PAYMENT METHODS ---------------- */
 const METHODS = [
-  { id: "visa", label: "Visa", icon: "/visa.svg", currency: "usd" },
+  { id: "visa", label: "Visa", icon: "/visa.svg", currency: "eur" },
   { id: "mastercard", label: "Mastercard", icon: "/mastercard.svg", currency: "usd" },
   { id: "applepay", label: "Apple Pay", icon: "/applepay.svg", currency: "eur" },
-  { id: "gpay", label: "Google Pay", icon: "/gpay.svg", currency: "usd" },
+  { id: "gpay", label: "Google Pay", icon: "/gpay.svg", currency: "eur" },
 ];
+
 
 export default function CombinedPaymentPage() {
   const [method, setMethod] = useState("visa");
@@ -97,7 +98,7 @@ export default function CombinedPaymentPage() {
   };
 
   const activeCurrency =
-    METHODS.find((m) => m.id === method)?.currency.toUpperCase() || "USD";
+    METHODS.find((m) => m.id === method)?.currency.toUpperCase() || "EUR";
 
   return (
     <div
