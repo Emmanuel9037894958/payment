@@ -19,7 +19,7 @@ export default function SuccessClient() {
       return;
     }
 
-    const verifyPayment = async () => {
+    async function verifyPayment() {
       try {
         const res = await fetch(`/api/verify?tx_ref=${txRef}`);
         const data = await res.json();
@@ -32,9 +32,9 @@ export default function SuccessClient() {
         setMessage("Your payment was successful.");
       } catch (err) {
         setStatus("error");
-        setMessage(err.message || "Verification failed");
+        setMessage(err?.message || "Verification failed");
       }
-    };
+    }
 
     verifyPayment();
   }, [txRef]);
