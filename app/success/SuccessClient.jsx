@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
-import { Loader2, CheckCircle, XCircle } from "lucide-react";
+import { Loader2, CheckCircle, AlertCircle } from "lucide-react";
 
 export default function SuccessClient() {
   const searchParams = useSearchParams();
@@ -54,7 +54,7 @@ export default function SuccessClient() {
           <h1 className="text-3xl font-bold mb-2">Payment Successful 🎉</h1>
           <p className="text-white/70 mb-6">{message}</p>
           <button
-            onClick={() => router.push("/")}
+            onClick={() => router.push("/dashboard")}
             className="px-6 py-3 bg-green-600 rounded-lg font-semibold"
           >
             Continue
@@ -64,7 +64,7 @@ export default function SuccessClient() {
 
       {status === "error" && (
         <div className="text-center max-w-md">
-          <XCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+          <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
           <h1 className="text-3xl font-bold mb-2">Payment Failed</h1>
           <p className="text-white/70 mb-6">{message}</p>
           <button
