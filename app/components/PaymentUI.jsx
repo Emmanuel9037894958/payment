@@ -52,6 +52,11 @@ export default function PaymentUI() {
   };
 
   const openFlutterwave = (method) => {
+
+    console.log(
+  "FLW PUBLIC KEY:",
+  process.env.NEXT_PUBLIC_FLW_PUBLIC_KEY
+);
     window.FlutterwaveCheckout({
       public_key: process.env.NEXT_PUBLIC_FLW_PUBLIC_KEY,
       tx_ref: `zentra_${Date.now()}`,
