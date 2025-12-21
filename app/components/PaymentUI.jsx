@@ -26,8 +26,8 @@ export default function PaymentUI() {
     router.push("/login");
   };
 
-  // 💳 Unified payment handler
-  const startPayment = async (method) => {
+  // 💳 FLUTTERWAVE PAYMENT (EUR ONLY)
+  const startPayment = (method) => {
     if (!user?.email) {
       router.push("/login");
       return;
@@ -40,28 +40,46 @@ export default function PaymentUI() {
 
     setLoadingMethod(method);
 
-    try {
-      const res = await fetch("/api/init", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          email: user.email,
-          amount: Number(amount), // EUR (converted to NGN on backend)
-        }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data.error || "Payment failed");
-      }
-
-      // 🔁 Redirect to Paystack Checkout
-      window.location.href = data.authorization_url;
-    } catch (err) {
-      alert(err.message);
-      setLoadingMethod(null);
+    // Load Flutterwave script if not loaded
+    if (!window.FlutterwaveCheckout) {
+      const script = document.createElement("script");
+      script.src = "https://checkout.flutterwave.com/v3.js";
+      script.onload = () => openFlutterwave(method);
+      document.body.appendChild(script);
+    } else {
+      openFlutterwave(method);
     }
+  };
+
+  const openFlutterwave = (method) => {
+    window.FlutterwaveCheckout({
+      public_key: process.env.NEXT_PUBLIC_FLW_PUBLIC_KEY,
+      tx_ref: `zentra_${Date.now()}`,
+      amount: Number(amount),
+      currency: "EUR",
+      payment_options: "card,applepay,googlepay",
+      customer: {
+        email: user.email,
+      },
+      customizations: {
+        title: "Zentra Pay",
+        description: `Payment via ${method}`,
+        logo: "https://www.zentra-pay.com/logo.png",
+      },
+      callback: function (response) {
+        setLoadingMethod(null);
+
+        if (response.status === "successful") {
+          // Redirect to your existing success page
+          router.push(`/success?tx_ref=${response.tx_ref}`);
+        } else {
+          alert("Payment was not successful.");
+        }
+      },
+      onclose: function () {
+        setLoadingMethod(null);
+      },
+    });
   };
 
   return (
@@ -88,7 +106,7 @@ export default function PaymentUI() {
         </h1>
 
         <p className="text-white/70 mb-6">
-          Pay securely using Visa, Mastercard, Apple Pay, or Google Pay.
+          Pay securely in EUR using Visa, Mastercard, Apple Pay, or Google Pay.
         </p>
 
         {/* 💶 Amount Input */}
@@ -106,19 +124,9 @@ export default function PaymentUI() {
           />
         </div>
 
-        {/* Conversion Notice */}
-        <p className="text-xs text-white/60 mb-8">
-          Amounts are charged at the local currency equivalent based on the
-          current exchange rate.
-        </p>
-
         {/* PAYMENT OPTIONS */}
         <div className="flex gap-5 flex-wrap mb-10">
-          <PayIcon
-            label="Visa"
-            icon="/visa.svg"
-            onClick={() => startPayment("Visa")}
-          />
+          <PayIcon label="Visa" icon="/visa.svg" onClick={() => startPayment("Visa")} />
           <PayIcon
             label="MasterCard"
             icon="/mastercard.svg"
@@ -169,7 +177,7 @@ export default function PaymentUI() {
   );
 }
 
-/* PAYMENT ICON COMPONENT */
+/* PAYMENT ICON */
 function PayIcon({ icon, label, onClick }) {
   return (
     <button
