@@ -1,29 +1,20 @@
-"use client";
-
-export const dynamic = "force-dynamic";
-
 import { useEffect, useState } from "react";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useRouter } from "next/router";
 import { Loader2, CheckCircle, AlertCircle } from "lucide-react";
 
 export default function SuccessPage() {
-  const searchParams = useSearchParams();
-  const txRef = searchParams.get("tx_ref");
   const router = useRouter();
+  const { tx_ref } = router.query;
 
   const [status, setStatus] = useState("loading");
   const [message, setMessage] = useState("");
 
   useEffect(() => {
-    if (!txRef) {
-      setStatus("error");
-      setMessage("Invalid transaction reference.");
-      return;
-    }
+    if (!tx_ref) return;
 
     async function verifyPayment() {
       try {
-        const res = await fetch(`/api/verify?tx_ref=${txRef}`);
+        const res = await fetch(`/api/verify?tx_ref=${tx_ref}`);
         const data = await res.json();
 
         if (!res.ok || data.status !== "success") {
@@ -39,7 +30,7 @@ export default function SuccessPage() {
     }
 
     verifyPayment();
-  }, [txRef]);
+  }, [tx_ref]);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-black text-white px-6">
@@ -56,10 +47,10 @@ export default function SuccessPage() {
           <h1 className="text-3xl font-bold mb-2">Payment Successful 🎉</h1>
           <p className="text-white/70 mb-6">{message}</p>
           <button
-            onClick={() => router.push("/dashboard")}
+            onClick={() => router.push("/")}
             className="px-6 py-3 bg-green-600 rounded-lg font-semibold"
           >
-            Continue
+            Go Home
           </button>
         </div>
       )}
@@ -80,3 +71,7 @@ export default function SuccessPage() {
     </div>
   );
 }
+
+
+
+
