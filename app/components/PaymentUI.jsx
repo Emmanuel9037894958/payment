@@ -1,44 +1,20 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
-import { auth } from "@/app/firebase";
-import { onAuthStateChanged, signOut } from "firebase/auth";
+import React, { useState } from "react";
 
 const PAYMENT_LINK = "https://flutterwave.com/pay/swj4qzcu6cra";
 
 export default function PaymentUI() {
-  const [user, setUser] = useState(null);
   const [amount, setAmount] = useState("");
-  const router = useRouter();
-
-  // 🔐 Detect logged-in user
-  useEffect(() => {
-    const unsub = onAuthStateChanged(auth, (currentUser) => {
-      setUser(currentUser);
-    });
-    return () => unsub();
-  }, []);
-
-  // 🔓 Logout
-  const handleLogout = async () => {
-    await signOut(auth);
-    router.push("/login");
-  };
 
   // 💳 Redirect to Flutterwave Payment Link
   const startPayment = () => {
-    if (!user?.email) {
-      router.push("/login");
-      return;
-    }
-
     if (!amount || Number(amount) <= 0) {
       alert("Please enter a valid amount in EUR");
       return;
     }
 
-    // 🔁 Redirect to Flutterwave hosted checkout
+    // Redirect to Flutterwave hosted checkout
     window.location.href = PAYMENT_LINK;
   };
 
@@ -66,10 +42,10 @@ export default function PaymentUI() {
         </h1>
 
         <p className="text-white/70 mb-6">
-          You’ll be redirected to a secure payment page to complete your payment.
+          You’ll be redirected to a secure Flutterwave payment page.
         </p>
 
-        {/* 💶 Amount Input (UX only) */}
+        {/* 💶 Amount Input */}
         <div className="mb-6">
           <label className="block text-white/80 mb-2">Amount (EUR)</label>
           <input
@@ -85,47 +61,45 @@ export default function PaymentUI() {
         </div>
 
         {/* PAYMENT OPTIONS */}
-        <div className="flex gap-5 flex-wrap mb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
           <PayIcon label="Visa" icon="/visa.svg" onClick={startPayment} />
           <PayIcon label="MasterCard" icon="/mastercard.svg" onClick={startPayment} />
-          <PayIcon label="Apple Pay" icon="/applepay.svg" onClick={startPayment} />
-          <PayIcon label="Google Pay" icon="/gpay.svg" onClick={startPayment} />
-        </div>
-
-        {/* AUTH ACTION */}
-        <div className="flex gap-4">
-          {!user ? (
-            <button
-              onClick={() => router.push("/signup")}
-              className="px-6 py-3 rounded-lg bg-green-600 text-white font-semibold"
-            >
-              Get Started
-            </button>
-          ) : (
-            <button
-              onClick={handleLogout}
-              className="px-6 py-3 rounded-lg bg-red-600 text-white font-semibold"
-            >
-              Logout
-            </button>
-          )}
+          <PayIcon
+            label="Apple Pay"
+            icon="/applepay.svg"
+            badge="Powered by Flutterwave"
+            onClick={startPayment}
+          />
+          <PayIcon
+            label="Google Pay"
+            icon="/gpay.svg"
+            badge="Powered by Flutterwave"
+            onClick={startPayment}
+          />
         </div>
       </div>
     </div>
   );
 }
 
-/* PAYMENT ICON */
-function PayIcon({ icon, label, onClick }) {
+/* PAYMENT ICON COMPONENT */
+function PayIcon({ icon, label, onClick, badge }) {
   return (
     <button
       onClick={onClick}
-      className="flex items-center gap-3 bg-white/10 border border-white/20
+      className="relative flex items-center gap-3 bg-white/10 border border-white/20
                  px-5 py-4 rounded-xl text-white
                  hover:bg-white/20 hover:scale-105 transition"
     >
       <img src={icon} className="w-8 h-8 object-contain" alt={label} />
-      <span className="font-medium">{label}</span>
+      <div className="flex flex-col text-left">
+        <span className="font-medium">{label}</span>
+        {badge && (
+          <span className="text-[11px] text-white/60 mt-0.5">
+            {badge}
+          </span>
+        )}
+      </div>
     </button>
   );
 }
