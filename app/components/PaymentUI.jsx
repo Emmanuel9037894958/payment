@@ -4,11 +4,11 @@ import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { auth } from "@/app/firebase";
 import { onAuthStateChanged, signOut } from "firebase/auth";
-import { Loader2 } from "lucide-react";
+
+const PAYMENT_LINK = "https://flutterwave.com/pay/swj4qzcu6cra";
 
 export default function PaymentUI() {
   const [user, setUser] = useState(null);
-  const [loadingMethod, setLoadingMethod] = useState(null);
   const [amount, setAmount] = useState("");
   const router = useRouter();
 
@@ -26,8 +26,8 @@ export default function PaymentUI() {
     router.push("/login");
   };
 
-  // 💳 FLUTTERWAVE PAYMENT (EUR ONLY)
-  const startPayment = (method) => {
+  // 💳 Redirect to Flutterwave Payment Link
+  const startPayment = () => {
     if (!user?.email) {
       router.push("/login");
       return;
@@ -38,53 +38,8 @@ export default function PaymentUI() {
       return;
     }
 
-    setLoadingMethod(method);
-
-    // Load Flutterwave script if not loaded
-    if (!window.FlutterwaveCheckout) {
-      const script = document.createElement("script");
-      script.src = "https://checkout.flutterwave.com/v3.js";
-      script.onload = () => openFlutterwave(method);
-      document.body.appendChild(script);
-    } else {
-      openFlutterwave(method);
-    }
-  };
-
-  const openFlutterwave = (method) => {
-
-    console.log(
-  "FLW PUBLIC KEY:",
-  process.env.NEXT_PUBLIC_FLW_PUBLIC_KEY
-);
-    window.FlutterwaveCheckout({
-      public_key: process.env.NEXT_PUBLIC_FLW_PUBLIC_KEY,
-      tx_ref: `zentra_${Date.now()}`,
-      amount: Number(amount),
-      currency: "EUR",
-      payment_options: "card,applepay,googlepay",
-      customer: {
-        email: user.email,
-      },
-      customizations: {
-        title: "Zentra Pay",
-        description: `Payment via ${method}`,
-        logo: "https://www.zentra-pay.com/logo.png",
-      },
-      callback: function (response) {
-        setLoadingMethod(null);
-
-        if (response.status === "successful") {
-          // Redirect to your existing success page
-          router.push(`/success?tx_ref=${response.tx_ref}`);
-        } else {
-          alert("Payment was not successful.");
-        }
-      },
-      onclose: function () {
-        setLoadingMethod(null);
-      },
-    });
+    // 🔁 Redirect to Flutterwave hosted checkout
+    window.location.href = PAYMENT_LINK;
   };
 
   return (
@@ -111,10 +66,10 @@ export default function PaymentUI() {
         </h1>
 
         <p className="text-white/70 mb-6">
-          Pay securely in EUR using Visa, Mastercard, Apple Pay, or Google Pay.
+          You’ll be redirected to a secure payment page to complete your payment.
         </p>
 
-        {/* 💶 Amount Input */}
+        {/* 💶 Amount Input (UX only) */}
         <div className="mb-6">
           <label className="block text-white/80 mb-2">Amount (EUR)</label>
           <input
@@ -131,22 +86,10 @@ export default function PaymentUI() {
 
         {/* PAYMENT OPTIONS */}
         <div className="flex gap-5 flex-wrap mb-10">
-          <PayIcon label="Visa" icon="/visa.svg" onClick={() => startPayment("Visa")} />
-          <PayIcon
-            label="MasterCard"
-            icon="/mastercard.svg"
-            onClick={() => startPayment("MasterCard")}
-          />
-          <PayIcon
-            label="Apple Pay"
-            icon="/applepay.svg"
-            onClick={() => startPayment("Apple Pay")}
-          />
-          <PayIcon
-            label="Google Pay"
-            icon="/gpay.svg"
-            onClick={() => startPayment("Google Pay")}
-          />
+          <PayIcon label="Visa" icon="/visa.svg" onClick={startPayment} />
+          <PayIcon label="MasterCard" icon="/mastercard.svg" onClick={startPayment} />
+          <PayIcon label="Apple Pay" icon="/applepay.svg" onClick={startPayment} />
+          <PayIcon label="Google Pay" icon="/gpay.svg" onClick={startPayment} />
         </div>
 
         {/* AUTH ACTION */}
@@ -168,16 +111,6 @@ export default function PaymentUI() {
           )}
         </div>
       </div>
-
-      {/* 🔄 FULLSCREEN LOADER */}
-      {loadingMethod && (
-        <div className="fixed inset-0 bg-black/80 flex flex-col items-center justify-center z-50">
-          <Loader2 className="w-16 h-16 text-white animate-spin mb-6" />
-          <p className="text-white text-lg font-semibold text-center">
-            Preparing secure {loadingMethod} payment…
-          </p>
-        </div>
-      )}
     </div>
   );
 }
